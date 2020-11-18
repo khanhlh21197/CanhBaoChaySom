@@ -22,9 +22,9 @@
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/lblTitle"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_250sdp"
+                android:layout_height="@dimen/_200sdp"
 
-                android:src="@drawable/ic_fever"
+                android:src="@drawable/ic_flame"
                 android:textAlignment="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -169,6 +169,47 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lnEnvironmentTemperature">
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/imgEditImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_250sdp">
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/_8sdp"
+                        android:layout_marginEnd="@dimen/_8sdp" />
+
+                    <LinearLayout
+                        android:id="@+id/lnPickImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elevation="@dimen/_8sdp"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/label"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="Chụp hoặc chọn ảnh"
+                            android:textSize="@dimen/_18ssp" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/imageView1"
+                            android:layout_width="@dimen/_50sdp"
+                            android:layout_height="@dimen/_50sdp"
+                            android:layout_gravity="center"
+                            android:padding="@dimen/_5sdp"
+                            android:src="@drawable/ic_photo_camera" />
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -176,7 +217,8 @@
                     android:padding="@dimen/_4sdp"
                     android:text="Nhiệt độ"
                     android:textAllCaps="true"
-                    android:textSize="@dimen/_28ssp" />
+                    android:textSize="@dimen/_28ssp"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/txtHumanTemp"
@@ -188,6 +230,7 @@
                     android:text="@{detail_device.temp}"
                     android:textColor="@color/red"
                     android:textSize="@dimen/_48ssp"
+                    android:visibility="gone"
                     tools:text="37.4" />
 
             </LinearLayout>
@@ -199,6 +242,7 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:background="@drawable/bg_textview"
                 android:orientation="vertical"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lnHumanTemp">
@@ -360,6 +404,7 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/btnWarning">
 
@@ -390,6 +435,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginTop="@dimen/_8sdp"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/llHistoryDisplay" />

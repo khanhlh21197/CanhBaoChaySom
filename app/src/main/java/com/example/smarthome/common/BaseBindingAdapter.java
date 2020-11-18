@@ -6,15 +6,22 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Handler;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.app.NotificationCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -26,7 +33,6 @@ import com.example.smarthome.R;
 import com.example.smarthome.ui.device.DetailDeviceFragment;
 import com.example.smarthome.ui.device.model.Device;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.suke.widget.SwitchButton;
 
 import java.util.List;
@@ -69,12 +75,6 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
     @NonNull
     @Override
     public BaseBindingAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        if (viewType == EMPTY_VIEW) {
-//            return new ViewHolder(DataBindingUtil.inflate(inflater,
-//                    R.layout.item_empty_device,
-//                    parent,
-//                    false));
-//        }
         return new ViewHolder(DataBindingUtil.inflate(inflater, resId, parent, false));
     }
 
@@ -92,6 +92,14 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
             onItemClickListener.onItemLongClick(item);
             return false;
         });
+
+        TextView myText = (TextView) holder.itemView.findViewById(R.id.txtDeviceName);
+
+        Animation anim = new AlphaAnimation(0.0f, 1.0f);
+        anim.setDuration(50); //You can manage the blinking time with this parameter
+        anim.setStartOffset(20);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setRepeatCount(Animation.INFINITE);
 
         if (item instanceof Device) {
             Device device = (Device) item;
@@ -137,26 +145,29 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
                             holder.itemView.findViewById(R.id.imgWarning).setVisibility(View.VISIBLE);
                             holder.itemView.findViewById(R.id.imgWarning)
                                     .setAnimation(DetailDeviceFragment.createFlashingAnimation());
+                            myText.setTextColor(mContext.getResources().getColor(R.color.red));
+                            myText.startAnimation(anim);
 //                        createNotification(device.getNO(), device.getId());
                         } else {
                             holder.itemView.findViewById(R.id.imgWarning).setVisibility(View.GONE);
+                            myText.setTextColor(mContext.getResources().getColor(R.color.black));
+                            myText.clearAnimation();
                         }
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }
                 }
+                AppCompatImageView imgView = holder.itemView.findViewById(R.id.imgDevice);
                 if (!CommonActivity.isNullOrEmpty(device.getPicture())) {
-                    mStorage = FirebaseStorage.getInstance();
-                    StorageReference picture = mStorage.getReferenceFromUrl(device.getPicture());
-                    picture.getDownloadUrl().addOnCompleteListener(task -> {
-//                        Glide.with(mContext)
-//                                .load(getRandomImageUrl(new Random()))
-//                                .into((ImageView) holder.itemView.findViewById(R.id.imgDevice));
-                    });
+                    holder.itemView.findViewById(R.id.lnPickImage).setVisibility(View.GONE);
+                    byte[] decodedString = Base64.decode(device.getPicture(), Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    imgView.setVisibility(View.VISIBLE);
+                    imgView.setImageBitmap(decodedByte);
+                } else {
+                    holder.itemView.findViewById(R.id.lnPickImage).setVisibility(View.VISIBLE);
+                    imgView.setVisibility(View.GONE);
                 }
-//                Glide.with(mContext)
-//                        .load(getRandomImageUrl(new Random()))
-//                        .into((ImageView) holder.itemView.findViewById(R.id.imgDevice));
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }

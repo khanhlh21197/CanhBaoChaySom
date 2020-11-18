@@ -12,7 +12,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="180dp"
-        android:layout_height="@dimen/_90sdp"
+        android:layout_height="@dimen/_120sdp"
         android:layout_margin="4dp"
         android:animateLayoutChanges="true"
         android:background="@drawable/bg_textview"
@@ -52,23 +52,50 @@
 
         </LinearLayout>
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imgDevice"
-            android:layout_width="@dimen/_48sdp"
-            android:layout_height="@dimen/_48sdp"
-            android:layout_marginTop="@dimen/_8sdp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_battery"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/txtTemp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/llDeviceName" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_90sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llDeviceName">
+
+            <LinearLayout
+                android:id="@+id/lnPickImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:elevation="@dimen/_8sdp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="@dimen/_50sdp"
+                    android:layout_height="@dimen/_50sdp"
+                    android:layout_gravity="center"
+                    android:padding="@dimen/_5sdp"
+                    android:src="@drawable/ic_photo_camera" />
+
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgDevice"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_battery"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RelativeLayout
             android:id="@+id/rlOnOff"
             android:layout_width="@dimen/_48sdp"
             android:layout_height="@dimen/_48sdp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/llDeviceName">
@@ -105,7 +132,7 @@
             android:layout_width="@dimen/_48sdp"
             android:layout_height="@dimen/_48sdp"
             android:layout_marginTop="@dimen/_8sdp"
-            android:src="@drawable/ic_warning_red"
+            android:src="@drawable/ic_flame"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -124,6 +151,7 @@
             android:text="@{item_device.temp}"
             android:textColor="@color/colorPrimary"
             android:textSize="@dimen/_16ssp"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/llActive"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"

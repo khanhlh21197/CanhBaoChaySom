@@ -40,7 +40,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -166,8 +165,7 @@ public class TempMonitoringService extends LifecycleService implements Serializa
         RemoteViews notificationLayout =
                 new RemoteViews(getPackageName(), R.layout.notification_monitoring);
         String displayName = (device.getName() != null) ? device.getName() : device.getId();
-        notificationLayout.setTextViewText(R.id.message, device.getNO()
-                + " độ trên thiết bị "
+        notificationLayout.setTextViewText(R.id.message, "Nhiệt độ bất thường trên "
                 + displayName);
 
         Intent stopWarning = new Intent(this, NotificationIntentService.class);

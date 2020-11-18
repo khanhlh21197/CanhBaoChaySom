@@ -1,16 +1,23 @@
 package com.example.smarthome.ui.device;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +36,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -55,7 +64,10 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -65,7 +77,9 @@ import java.util.Objects;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-public class DetailDeviceFragment extends Fragment implements View.OnClickListener, OnChartValueSelectedListener {
+public class DetailDeviceFragment extends Fragment
+        implements View.OnClickListener,
+        OnChartValueSelectedListener {
     private static final String SHARED_PREFS_HISTORY = "SHARED_PREFS_HISTORY";
     private static final String KEY_HISTORY = "HISTORY";
     private Intent warningService;
@@ -115,6 +129,7 @@ public class DetailDeviceFragment extends Fragment implements View.OnClickListen
         unit();
         initAdapter();
         editDeviceName();
+        editImage();
         return mBinding.getRoot();
     }
 
@@ -192,6 +207,23 @@ public class DetailDeviceFragment extends Fragment implements View.OnClickListen
         });
     }
 
+    private void editImage() {
+        if (device.getPicture() != null) {
+            byte[] decodedString = Base64.decode(device.getPicture(), Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            mBinding.imageView.setVisibility(View.VISIBLE);
+            mBinding.lnPickImage.setVisibility(View.GONE);
+            mBinding.imageView.setImageBitmap(decodedByte);
+        } else {
+            mBinding.imageView.setVisibility(View.GONE);
+            mBinding.lnPickImage.setVisibility(View.VISIBLE);
+        }
+
+        mBinding.imgEditImage.setOnClickListener(v -> {
+            selectImage(getActivity());
+        });
+    }
+
     private void initAdapter() {
         linearLayoutManager
                 = new LinearLayoutManager(getActivity());
@@ -235,21 +267,6 @@ public class DetailDeviceFragment extends Fragment implements View.OnClickListen
             }
             startHandler(device.getNCL(), device);
         });
-
-//        viewModel.getAllDevice().subscribe(devices -> {
-//            if (!CommonActivity.isNullOrEmpty(devices)) {
-//                for (Device device : devices) {
-//                    if (device.getId().equals(DetailDeviceFragment.this.device.getId())) {
-//                        indexOfDevice = devices.indexOf(device);
-////                        liveData.setValue(device);
-//                        if (!CommonActivity.isNullOrEmpty(device.getNCL())) {
-//                            startHandler(device.getNCL(), device);
-//                        }
-//                        break;
-//                    }
-//                }
-//            }
-//        });
     }
 
     private void initProgress() {
@@ -477,6 +494,39 @@ public class DetailDeviceFragment extends Fragment implements View.OnClickListen
         dialog.show();
     }
 
+    private void selectImage(Context context) {
+        final CharSequence[] options = {"Chụp ảnh", "Chọn từ thư viện", "Hủy"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Choose your profile picture");
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (options[which].equals("Chụp ảnh")) {
+                    if ((ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)) == PackageManager.PERMISSION_DENIED) {
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 111);
+                    } else {
+                        Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(takePicture, 0);
+                    }
+                } else if (options[which].equals("Chọn từ thư viện")) {
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
+
+//                    Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                    startActivityForResult(pickPhoto, 1);
+
+                } else if (options[which].equals("Hủy")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("CheckResult")
     private void getDB() {
@@ -679,6 +729,53 @@ public class DetailDeviceFragment extends Fragment implements View.OnClickListen
 
         ParamType(int i) {
             i = value;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_CANCELED) {
+            switch (requestCode) {
+                case 0:
+                    if (resultCode == Activity.RESULT_OK && data != null) {
+                        Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
+                        mBinding.imageView.setImageBitmap(selectedImage);
+
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        selectedImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                        byte[] byteArray = byteArrayOutputStream.toByteArray();
+                        String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                        viewModel.setPicture(device.getIndex(), encoded).subscribe();
+                    }
+
+                    break;
+                case 1:
+                    if (resultCode == Activity.RESULT_OK && data != null) {
+                        try {
+                            final Uri imageUri = data.getData();
+                            final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
+                            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+
+                            mBinding.imageView.setImageBitmap(selectedImage);
+
+                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                            selectedImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                            byte[] byteArray = byteArrayOutputStream.toByteArray();
+                            String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                            viewModel.setPicture(device.getIndex(), encoded).subscribe();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case 111:
+                    if (resultCode == Activity.RESULT_OK) {
+                        Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(takePicture, 0);
+                    }
+                    break;
+            }
         }
     }
 }
