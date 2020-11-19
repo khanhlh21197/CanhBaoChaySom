@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Base64;
@@ -163,10 +164,17 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
                 AppCompatImageView imgView = holder.itemView.findViewById(R.id.imgDevice);
                 if (!CommonActivity.isNullOrEmpty(device.getPicture())) {
                     holder.itemView.findViewById(R.id.lnPickImage).setVisibility(View.GONE);
-                    byte[] decodedString = Base64.decode(device.getPicture(), Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    imgView.setVisibility(View.VISIBLE);
-                    imgView.setImageBitmap(decodedByte);
+//                    byte[] decodedString = Base64.decode(device.getPicture(), Base64.DEFAULT);
+//                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    LoadImageAsync loadImageAsync = new LoadImageAsync();
+                    loadImageAsync.execute(device.getPicture());
+                    loadImageAsync.setOnImageSuccess(new OnImageSuccess() {
+                        @Override
+                        public void onImageSuccess(Bitmap imageBitmap) {
+                            imgView.setVisibility(View.VISIBLE);
+                            imgView.setImageBitmap(imageBitmap);
+                        }
+                    });
                 } else {
                     holder.itemView.findViewById(R.id.lnPickImage).setVisibility(View.VISIBLE);
                     imgView.setVisibility(View.GONE);
@@ -177,7 +185,10 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
         }
     }
 
-    private void loadBase64Image(){};
+    private void loadBase64Image() {
+    }
+
+    ;
 
     @Override
     public int getItemCount() {
@@ -263,5 +274,36 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
 
         return String.format(Locale.getDefault(), RESTAURANT_URL_FMT, id);
     }
+}
+
+class LoadImageAsync extends AsyncTask<String, Void, Bitmap> {
+    OnImageSuccess onImageSuccess;
+
+    public void setOnImageSuccess(OnImageSuccess onImageSuccess) {
+        this.onImageSuccess = onImageSuccess;
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap bitmap) {
+        super.onPostExecute(bitmap);
+        onImageSuccess.onImageSuccess(bitmap);
+    }
+
+    @Override
+    protected Bitmap doInBackground(String... strings) {
+        Bitmap bitmap = null;
+        bitmap = base64ToBitmap(strings[0]);
+        return bitmap;
+    }
+
+    private Bitmap base64ToBitmap(String base64) {
+        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
+    }
+}
+
+interface OnImageSuccess {
+    void onImageSuccess(Bitmap imageBitmap);
 }
 

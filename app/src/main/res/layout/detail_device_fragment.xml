@@ -178,8 +178,7 @@
                         android:id="@+id/imageView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/_8sdp"
-                        android:layout_marginEnd="@dimen/_8sdp" />
+                        android:layout_margin="@dimen/_8sdp" />
 
                     <ImageView
                         android:id="@+id/imgWarning"

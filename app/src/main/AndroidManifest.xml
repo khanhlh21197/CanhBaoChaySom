@@ -57,6 +57,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.gallery.GallerySample" />
+
         <service
             android:name="com.example.firewarning.warning.WarningService"
             android:enabled="true"

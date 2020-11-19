@@ -49,6 +49,7 @@ import com.example.firewarning.dao.AppDatabase;
 import com.example.firewarning.databinding.DetailDeviceFragmentBinding;
 import com.example.firewarning.serializer.ObjectSerializer;
 import com.example.firewarning.ui.device.model.Device;
+import com.example.firewarning.ui.gallery.GallerySample;
 import com.example.firewarning.warning.WarningService;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -516,6 +517,8 @@ public class DetailDeviceFragment extends Fragment
                         startActivityForResult(takePicture, 0);
                     }
                 } else if (options[which].equals("Chọn từ thư viện")) {
+//                    Intent intent = new Intent(getActivity(), GallerySample.class);
+//                    startActivityForResult(intent, 111);
                     Intent intent = new Intent();
                     intent.setType("image/*");
                     intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -765,11 +768,11 @@ public class DetailDeviceFragment extends Fragment
                             final Uri imageUri = data.getData();
                             final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
                             final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                            selectedImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
 
                             mBinding.imageView.setImageBitmap(selectedImage);
 
-                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                            selectedImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                             byte[] byteArray = byteArrayOutputStream.toByteArray();
                             String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
                             viewModel.setPicture(device.getIndex(), encoded).subscribe();
