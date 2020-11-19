@@ -7,11 +7,11 @@
 
         <variable
             name="detail_device"
-            type="com.example.smarthome.ui.device.model.Device" />
+            type="com.example.firewarning.ui.device.model.Device" />
 
         <variable
             name="vm"
-            type="com.example.smarthome.ui.device.DetailDeviceViewModel" />
+            type="com.example.firewarning.ui.device.DetailDeviceViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -181,6 +181,15 @@
                         android:layout_marginStart="@dimen/_8sdp"
                         android:layout_marginEnd="@dimen/_8sdp" />
 
+                    <ImageView
+                        android:id="@+id/imgWarning"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/_8sdp"
+                        android:layout_marginEnd="@dimen/_8sdp"
+                        android:background="#CCFF0000"
+                        android:visibility="gone" />
+
                     <LinearLayout
                         android:id="@+id/lnPickImage"
                         android:layout_width="match_parent"
@@ -209,6 +218,14 @@
                     </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/tvChoose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Chọn vào ảnh để thay đổi"
+                    android:textSize="@dimen/_18ssp" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -387,10 +404,11 @@
             <Button
                 android:id="@+id/btnWarning"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_100sdp"
                 android:layout_marginTop="8dp"
                 android:text="Tắt cảnh báo"
                 android:textColor="@color/red"
+                android:textSize="@dimen/_22ssp"
                 android:visibility="gone"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"

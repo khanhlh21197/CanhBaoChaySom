@@ -1,87 +1,42 @@
 {
   "project_info": {
-    "project_number": "446330053619",
-    "firebase_url": "https://temparaturesensor.firebaseio.com",
-    "project_id": "temparaturesensor",
-    "storage_bucket": "temparaturesensor.appspot.com"
+    "project_number": "79011157036",
+    "firebase_url": "https://canhbaochaysom.firebaseio.com",
+    "project_id": "canhbaochaysom",
+    "storage_bucket": "canhbaochaysom.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:446330053619:android:8718809c351182c4b6a886",
+        "mobilesdk_app_id": "1:79011157036:android:f40bf8ce86c9f062c5ad89",
         "android_client_info": {
-          "package_name": "com.example.smarthome"
+          "package_name": "com.example.firewarning"
         }
       },
       "oauth_client": [
         {
-          "client_id": "446330053619-p4j57tcvp8r1pss3rsq1mul7cnt6ump6.apps.googleusercontent.com",
+          "client_id": "79011157036-d3p9pmuqb599sl9p8dmmschru8954hkb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.smarthome",
+            "package_name": "com.example.firewarning",
             "certificate_hash": "b7dbe9f5655e8d947fdd5361a285289bda072f4f"
           }
         },
         {
-          "client_id": "446330053619-rab240nt46rhl01elaa43u6ed7rso79h.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.smarthome",
-            "certificate_hash": "1b8edb8ed156107d7fa0e5b34e6edf056e37e0f3"
-          }
-        },
-        {
-          "client_id": "446330053619-64g09537de3no7ebh9nfmfvbf3938763.apps.googleusercontent.com",
+          "client_id": "79011157036-ncq7nejcent9m3iivdoopb8ofd28nkig.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC6CpmEV1RsNI5fh0JhNYerxyRtFNbR8Ak"
+          "current_key": "AIzaSyBCJDOS7BV64DNLqdrF0jYCYtg2kTZPt8Q"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "446330053619-64g09537de3no7ebh9nfmfvbf3938763.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:446330053619:android:fb885ce3319f5023b6a886",
-        "android_client_info": {
-          "package_name": "com.example.temparaturesensor"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "446330053619-7o6ddrp0967ftovcorl089u0g95b60mn.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.temparaturesensor",
-            "certificate_hash": "1b8edb8ed156107d7fa0e5b34e6edf056e37e0f3"
-          }
-        },
-        {
-          "client_id": "446330053619-64g09537de3no7ebh9nfmfvbf3938763.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC6CpmEV1RsNI5fh0JhNYerxyRtFNbR8Ak"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "446330053619-64g09537de3no7ebh9nfmfvbf3938763.apps.googleusercontent.com",
+              "client_id": "79011157036-ncq7nejcent9m3iivdoopb8ofd28nkig.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

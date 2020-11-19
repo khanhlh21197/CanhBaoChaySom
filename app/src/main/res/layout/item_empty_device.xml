@@ -7,7 +7,7 @@
 
         <variable
             name="item_device"
-            type="com.example.smarthome.ui.device.model.Device" />
+            type="com.example.firewarning.ui.device.model.Device" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

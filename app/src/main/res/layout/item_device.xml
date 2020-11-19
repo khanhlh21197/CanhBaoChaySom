@@ -7,7 +7,7 @@
 
         <variable
             name="item_device"
-            type="com.example.smarthome.ui.device.model.Device" />
+            type="com.example.firewarning.ui.device.model.Device" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -89,6 +89,16 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgWarning"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#CCFF0000"
+                android:scaleType="fitXY"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RelativeLayout
@@ -127,18 +137,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/llDeviceName" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imgWarning"
-            android:layout_width="@dimen/_48sdp"
-            android:layout_height="@dimen/_48sdp"
-            android:layout_marginTop="@dimen/_8sdp"
-            android:src="@drawable/ic_flame"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/llDeviceName" />
+        <!--        <androidx.appcompat.widget.AppCompatImageView-->
+        <!--            android:id="@+id/imgWarning"-->
+        <!--            android:layout_width="@dimen/_48sdp"-->
+        <!--            android:layout_height="@dimen/_48sdp"-->
+        <!--            android:layout_marginTop="@dimen/_8sdp"-->
+        <!--            android:background="@color/red"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--            app:layout_constraintLeft_toRightOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/llDeviceName" />-->
 
         <TextView
             android:id="@+id/txtTemp"

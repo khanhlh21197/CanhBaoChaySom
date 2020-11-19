@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.smarthome">
+    package="com.example.firewarning">
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -21,13 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver
-            android:name=".broadcast.NetworkStateMonitor"
+            android:name="com.example.firewarning.broadcast.NetworkStateMonitor"
             android:enabled="true"
             android:exported="true"
             tools:ignore="Instantiatable" />
 
         <service
-            android:name=".warning.MyFirebaseMessagingService"
+            android:name="com.example.firewarning.warning.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -35,17 +35,17 @@
         </service>
 
         <receiver
-            android:name=".broadcast.Restarter"
+            android:name="com.example.firewarning.broadcast.Restarter"
             android:enabled="true"
             android:exported="true" />
 
         <service
-            android:name=".ui.main.TempMonitoringService"
+            android:name="com.example.firewarning.ui.main.TempMonitoringService"
             android:enabled="true"
             android:exported="true" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.firewarning.MainActivity"
             android:configChanges="orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -58,12 +58,12 @@
         </activity>
 
         <service
-            android:name=".warning.WarningService"
+            android:name="com.example.firewarning.warning.WarningService"
             android:enabled="true"
             android:exported="false"
             android:process=":remote" />
         <service
-            android:name=".warning.NotificationService"
+            android:name="com.example.firewarning.warning.NotificationService"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -77,7 +77,7 @@
                 android:resource="@drawable/ic_warning_red" />
         </service>
         <service
-            android:name=".warning.NotificationIntentService"
+            android:name="com.example.firewarning.warning.NotificationIntentService"
             android:enabled="true"
             android:exported="false" />
     </application>

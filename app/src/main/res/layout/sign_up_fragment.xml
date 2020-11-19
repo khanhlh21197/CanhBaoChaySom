@@ -5,7 +5,7 @@
 
         <variable
             name="SignUpViewModel"
-            type="com.example.smarthome.ui.signup.SignUpViewModel" />
+            type="com.example.firewarning.ui.signup.SignUpViewModel" />
     </data>
 
     <ScrollView

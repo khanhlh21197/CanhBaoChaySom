@@ -7,11 +7,11 @@
 
         <variable
             name="detail_device"
-            type="com.example.smarthome.ui.device.model.Device" />
+            type="com.example.firewarning.ui.device.model.Device" />
 
         <variable
             name="vm"
-            type="com.example.smarthome.ui.device.DetailDeviceViewModel" />
+            type="com.example.firewarning.ui.device.DetailDeviceViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView

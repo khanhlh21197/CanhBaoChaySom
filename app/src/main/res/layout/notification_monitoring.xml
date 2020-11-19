@@ -12,7 +12,7 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_marginEnd="24dp"
-        android:src="@drawable/ic_warning_red" />
+        android:src="@drawable/ic_flame" />
 
     <TextView
         android:id="@+id/message"
@@ -21,26 +21,40 @@
         android:layout_toEndOf="@+id/imgLogo"
         android:maxLines="1"
         android:text="Nhiệt độ vượt ngưỡng cho phép"
+        android:textAllCaps="true"
         android:textColor="@color/red"
-        android:textSize="@dimen/_12ssp" />
+        android:textSize="@dimen/_14ssp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:id="@+id/removeWarning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/message"
-        android:layout_marginTop="8dp"
         android:layout_toEndOf="@+id/imgLogo"
-        android:background="@drawable/btn_onpress_background_gradient_blue"
+        android:orientation="horizontal"
         android:padding="4dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:padding="4dp"
+            android:elevation="@dimen/_8sdp"
             android:text="Tắt âm báo"
-            android:textAllCaps="true"
-            android:textSize="@dimen/_12ssp" />
+            android:textAllCaps="false"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/_12ssp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/_16sdp"
+            android:elevation="@dimen/_8sdp"
+            android:text="Đồng ý"
+            android:textAllCaps="false"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/_12ssp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </RelativeLayout>
