@@ -175,12 +175,6 @@
                     android:layout_height="@dimen/_250sdp">
 
                     <ImageView
-                        android:id="@+id/imageView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="@dimen/_8sdp" />
-
-                    <ImageView
                         android:id="@+id/imgWarning"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -213,6 +207,12 @@
                             android:layout_gravity="center"
                             android:padding="@dimen/_5sdp"
                             android:src="@drawable/ic_photo_camera" />
+
+                        <ImageView
+                            android:id="@+id/imageView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="@dimen/_8sdp" />
 
                     </LinearLayout>
 

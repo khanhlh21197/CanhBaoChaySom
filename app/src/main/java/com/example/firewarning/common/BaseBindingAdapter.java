@@ -146,14 +146,14 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
                         && !CommonActivity.isNullOrEmpty(device.getNG())) {
                     try {
                         if (Double.parseDouble(device.getNO()) > Double.parseDouble(device.getNG())) {
-                            holder.itemView.findViewById(R.id.imgWarning).setVisibility(View.VISIBLE);
-                            holder.itemView.findViewById(R.id.imgWarning)
-                                    .setAnimation(DetailDeviceFragment.createFlashingAnimation());
+//                            holder.itemView.findViewById(R.id.imgWarning).setVisibility(View.VISIBLE);
+//                            holder.itemView.findViewById(R.id.imgWarning)
+//                                    .setAnimation(DetailDeviceFragment.createFlashingAnimation());
                             myText.setTextColor(mContext.getResources().getColor(R.color.red));
                             myText.startAnimation(anim);
 //                        createNotification(device.getNO(), device.getId());
                         } else {
-                            holder.itemView.findViewById(R.id.imgWarning).setVisibility(View.GONE);
+//                            holder.itemView.findViewById(R.id.imgWarning).setVisibility(View.GONE);
                             myText.setTextColor(mContext.getResources().getColor(R.color.black));
                             myText.clearAnimation();
                         }

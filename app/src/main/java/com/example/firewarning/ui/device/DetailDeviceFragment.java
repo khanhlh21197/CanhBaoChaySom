@@ -252,7 +252,7 @@ public class DetailDeviceFragment extends Fragment
         initProgress();
         warningService = new Intent(getActivity(), WarningService.class);
         mBinding.btnWarning.setAnimation(createFlashingAnimation());
-        mBinding.imgWarning.setAnimation(createFlashingAnimation());
+//        mBinding.imgWarning.setAnimation(createFlashingAnimation());
         mBinding.btnThreshold.setOnClickListener(this);
         mBinding.btnOffset.setOnClickListener(this);
         mBinding.btnLoopingTime.setOnClickListener(this);
@@ -410,7 +410,7 @@ public class DetailDeviceFragment extends Fragment
             flashingText = true;
         }
         mBinding.btnWarning.setVisibility(View.VISIBLE);
-        mBinding.imgWarning.setVisibility(View.VISIBLE);
+//        mBinding.imgWarning.setVisibility(View.VISIBLE);
         mBinding.btnWarning.setAnimation(createFlashingAnimation());
 //        showNoti();
     }
@@ -426,7 +426,7 @@ public class DetailDeviceFragment extends Fragment
 
     private void cancelWarning() {
         mBinding.btnWarning.setVisibility(View.GONE);
-        mBinding.imgWarning.setVisibility(View.GONE);
+//        mBinding.imgWarning.setVisibility(View.GONE);
         mBinding.btnWarning.clearAnimation();
         mBinding.txtHumanTemp.clearAnimation();
         flashingText = false;
