@@ -49,7 +49,6 @@ import com.example.firewarning.dao.AppDatabase;
 import com.example.firewarning.databinding.DetailDeviceFragmentBinding;
 import com.example.firewarning.serializer.ObjectSerializer;
 import com.example.firewarning.ui.device.model.Device;
-import com.example.firewarning.ui.gallery.GallerySample;
 import com.example.firewarning.warning.WarningService;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -209,7 +208,7 @@ public class DetailDeviceFragment extends Fragment
     }
 
     private void editImage() {
-        if (device.getPicture() != null) {
+        if (!CommonActivity.isNullOrEmpty(device.getPicture())) {
             byte[] decodedString = Base64.decode(device.getPicture(), Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             mBinding.imageView.setVisibility(View.VISIBLE);
@@ -504,7 +503,7 @@ public class DetailDeviceFragment extends Fragment
         final CharSequence[] options = {"Chụp ảnh", "Chọn từ thư viện", "Hủy"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Choose your profile picture");
+        builder.setTitle("Chọn ảnh");
 
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
@@ -749,13 +748,19 @@ public class DetailDeviceFragment extends Fragment
                     if (resultCode == Activity.RESULT_OK && data != null) {
                         try {
                             Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
-                            mBinding.imageView.setImageBitmap(selectedImage);
 
                             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                             selectedImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                             byte[] byteArray = byteArrayOutputStream.toByteArray();
-                            String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                            viewModel.setPicture(device.getIndex(), encoded).subscribe();
+                            double kb = byteArray.length / 1024;
+                            if (kb > 1000) {
+                                Toast.makeText(getActivity(), "Kích thước ảnh quá lớn, vui lòng chọn lại", Toast.LENGTH_SHORT).show();
+                            } else {
+                                mBinding.imageView.setImageBitmap(selectedImage);
+                                Toast.makeText(getActivity(), "Kích thước ảnh: " + byteArray.length / 1024, Toast.LENGTH_SHORT).show();
+                                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                                viewModel.setPicture(device.getIndex(), encoded).subscribe();
+                            }
                         } catch (RuntimeException e) {
                             Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
                         }
@@ -770,12 +775,17 @@ public class DetailDeviceFragment extends Fragment
                             final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                             selectedImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-
-                            mBinding.imageView.setImageBitmap(selectedImage);
-
                             byte[] byteArray = byteArrayOutputStream.toByteArray();
-                            String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                            viewModel.setPicture(device.getIndex(), encoded).subscribe();
+
+                            double kb = byteArray.length / 1024;
+                            if (kb > 1000) {
+                                Toast.makeText(getActivity(), "Kích thước ảnh quá lớn, vui lòng chọn lại", Toast.LENGTH_SHORT).show();
+                            } else {
+                                mBinding.imageView.setImageBitmap(selectedImage);
+                                Toast.makeText(getActivity(), "Kích thước ảnh: " + byteArray.length / 1024, Toast.LENGTH_SHORT).show();
+                                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                                viewModel.setPicture(device.getIndex(), encoded).subscribe();
+                            }
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                             Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();

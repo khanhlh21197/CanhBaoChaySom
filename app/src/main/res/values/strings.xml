@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Cảnh báo cháy sớm</string>
+    <string name="app_name">Cảnh Báo Cháy Sớm</string>
     <string name="chon_ngay">Chọn ngày</string>
     <string name="errorProcess">Có lỗi xảy ra trong quá trình xử lý. Vui lòng kiểm tra lại.</string>
     <string name="ok">Đồng ý</string>
@@ -44,8 +44,8 @@
     <string name="login">Đăng nhập</string>
     <string name="manage_device">Quản lý thiết bị</string>
     <string name="no_device">Không có thiết bị, vui lòng thêm thiết bị</string>
-    <string name="turn_on_monitoring">Bật theo dõi thiết bị</string>
-    <string name="turn_off_monitoring">Tắt theo dõi thiết bị</string>
+    <string name="turn_on_monitoring">Bật Cảnh báo Popup</string>
+    <string name="turn_off_monitoring">Tắt Cảnh báo Popup</string>
     <string name="input_device_name">Vui lòng nhập tên thiết bị</string>
     <string name="delete">Xóa</string>
     <string name="on">Đã bật</string>

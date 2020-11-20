@@ -165,7 +165,7 @@ public class TempMonitoringService extends LifecycleService implements Serializa
         RemoteViews notificationLayout =
                 new RemoteViews(getPackageName(), R.layout.notification_monitoring);
         String displayName = (device.getName() != null) ? device.getName() : device.getId();
-        notificationLayout.setTextViewText(R.id.message, "Nhiệt độ bất thường trên "
+        notificationLayout.setTextViewText(R.id.message, "Cháy "
                 + displayName);
 
         Intent stopWarning = new Intent(this, NotificationIntentService.class);

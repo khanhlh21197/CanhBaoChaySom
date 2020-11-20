@@ -16,7 +16,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight=".3"
-            android:text="Tên thiết bị: "
+            android:text="Tên (vị trí)"
             android:textSize="@dimen/_14ssp" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Nhập tên thiết bị"
+                android:hint="Nhập tên (vị trí)"
                 android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_8sdp"
         android:gravity="center"
-        android:text="Vui lòng nhập tên thiết bị"
+        android:text="Vui lòng nhập tên (vị trí)"
         android:textColor="@color/red"
         android:visibility="gone" />
 

@@ -21,7 +21,6 @@
         android:layout_toEndOf="@+id/imgLogo"
         android:maxLines="1"
         android:text="Nhiệt độ vượt ngưỡng cho phép"
-        android:textAllCaps="true"
         android:textColor="@color/red"
         android:textSize="@dimen/_14ssp"
         android:textStyle="bold" />
@@ -40,17 +39,6 @@
             android:layout_height="match_parent"
             android:elevation="@dimen/_8sdp"
             android:text="Tắt âm báo"
-            android:textAllCaps="false"
-            android:textColor="@color/blue"
-            android:textSize="@dimen/_12ssp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/_16sdp"
-            android:elevation="@dimen/_8sdp"
-            android:text="Đồng ý"
             android:textAllCaps="false"
             android:textColor="@color/blue"
             android:textSize="@dimen/_12ssp"
