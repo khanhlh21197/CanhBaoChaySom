@@ -7,12 +7,14 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.example.firewarning.ui.device.model.Device;
+import com.example.firewarning.ui.gallery.Image;
 
-@Database(entities = {Device.class}, version = 1)
+@Database(entities = {Device.class, Image.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase INSTANCE;
 
     public abstract DeviceDAO deviceDAO();
+    public abstract ImageDAO imageDAO();
 
     public static AppDatabase getDatabase(Context context) {
         if (INSTANCE == null) {

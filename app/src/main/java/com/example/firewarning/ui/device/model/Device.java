@@ -75,13 +75,26 @@ public class Device implements Serializable {
     @PropertyName("time")
     @ColumnInfo(name = "time")
     private String time;
-    @PropertyName("picture")
+    @PropertyName("bitmapImage")
     @Expose
-    private String picture;
+    private String bitmapImage;
+
+    @PropertyName("des")
+    @Expose
+    private String des;
+
     private int index;
     private String temp;
     private String position;
     private boolean active;
+
+    public String getDes() {
+        return des;
+    }
+
+    public void setDes(String des) {
+        this.des = des;
+    }
 
     public boolean isActive() {
         return active;
@@ -129,12 +142,12 @@ public class Device implements Serializable {
         this.position = position;
     }
 
-    public String getPicture() {
-        return picture;
+    public String getBitmapImage() {
+        return bitmapImage;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setBitmapImage(String bitmapImage) {
+        this.bitmapImage = bitmapImage;
     }
 
     public void loadPicture(String picture) {

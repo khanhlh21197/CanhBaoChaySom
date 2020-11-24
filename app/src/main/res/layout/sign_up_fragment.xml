@@ -26,7 +26,7 @@
                 android:layout_height="@dimen/_72sdp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/_24sdp"
-                android:src="@drawable/ic_fever" />
+                android:src="@drawable/ic_flame_warning" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/emailAddress"

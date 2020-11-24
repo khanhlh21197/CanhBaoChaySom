@@ -8,10 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,11 +29,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.firewarning.BR;
 import com.example.firewarning.MainActivity;
 import com.example.firewarning.R;
-import com.example.firewarning.ui.device.DetailDeviceFragment;
+import com.example.firewarning.dao.AppDatabase;
 import com.example.firewarning.ui.device.model.Device;
+import com.example.firewarning.ui.gallery.Image;
 import com.google.firebase.storage.FirebaseStorage;
 import com.suke.widget.SwitchButton;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -56,6 +56,7 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
     private Context mContext;
     private FirebaseStorage mStorage;
     private CompositeDisposable disposable = new CompositeDisposable();
+    private List<Image> images;
 
     public void setOnItemClickListener(OnItemClickListener<T> onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
@@ -65,6 +66,7 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
         inflater = LayoutInflater.from(context);
         this.resId = resId;
         mContext = context;
+        images = AppDatabase.getDatabase(mContext).imageDAO().getAllImages();
     }
 
     public void setData(List<T> data) {
@@ -108,6 +110,20 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
         if (item instanceof Device) {
             Device device = (Device) item;
             try {
+                AppCompatImageView imgView = holder.itemView.findViewById(R.id.imgDevice);
+                if (!CommonActivity.isNullOrEmpty(device.getId())) {
+                    images.forEach(image -> {
+                        if (device.getId().equals(image.getDeviceId())) {
+                            try {
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(image.getImage(), 0, image.getImage().length);
+                                imgView.setImageBitmap(bitmap);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+
                 holder.itemView.findViewById(R.id.imgEdit).setOnClickListener(v
                         -> onItemClickListener.onBtnEditClick(item, position));
                 SwitchButton switchButton = holder.itemView.findViewById(R.id.onOffSwitch);
@@ -146,38 +162,15 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
                         && !CommonActivity.isNullOrEmpty(device.getNG())) {
                     try {
                         if (Double.parseDouble(device.getNO()) > Double.parseDouble(device.getNG())) {
-//                            holder.itemView.findViewById(R.id.imgWarning).setVisibility(View.VISIBLE);
-//                            holder.itemView.findViewById(R.id.imgWarning)
-//                                    .setAnimation(DetailDeviceFragment.createFlashingAnimation());
                             myText.setTextColor(mContext.getResources().getColor(R.color.red));
                             myText.startAnimation(anim);
-//                        createNotification(device.getNO(), device.getId());
                         } else {
-//                            holder.itemView.findViewById(R.id.imgWarning).setVisibility(View.GONE);
                             myText.setTextColor(mContext.getResources().getColor(R.color.black));
                             myText.clearAnimation();
                         }
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }
-                }
-                AppCompatImageView imgView = holder.itemView.findViewById(R.id.imgDevice);
-                if (!CommonActivity.isNullOrEmpty(device.getPicture())) {
-                    holder.itemView.findViewById(R.id.lnPickImage).setVisibility(View.GONE);
-//                    byte[] decodedString = Base64.decode(device.getPicture(), Base64.DEFAULT);
-//                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    LoadImageAsync loadImageAsync = new LoadImageAsync();
-                    loadImageAsync.execute(device.getPicture());
-                    loadImageAsync.setOnImageSuccess(new OnImageSuccess() {
-                        @Override
-                        public void onImageSuccess(Bitmap imageBitmap) {
-                            imgView.setVisibility(View.VISIBLE);
-                            imgView.setImageBitmap(imageBitmap);
-                        }
-                    });
-                } else {
-                    holder.itemView.findViewById(R.id.lnPickImage).setVisibility(View.VISIBLE);
-                    imgView.setVisibility(View.GONE);
                 }
             } catch (NumberFormatException e) {
                 e.printStackTrace();
@@ -187,8 +180,6 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
 
     private void loadBase64Image() {
     }
-
-    ;
 
     @Override
     public int getItemCount() {
@@ -274,36 +265,5 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
 
         return String.format(Locale.getDefault(), RESTAURANT_URL_FMT, id);
     }
-}
-
-class LoadImageAsync extends AsyncTask<String, Void, Bitmap> {
-    OnImageSuccess onImageSuccess;
-
-    public void setOnImageSuccess(OnImageSuccess onImageSuccess) {
-        this.onImageSuccess = onImageSuccess;
-    }
-
-    @Override
-    protected void onPostExecute(Bitmap bitmap) {
-        super.onPostExecute(bitmap);
-        onImageSuccess.onImageSuccess(bitmap);
-    }
-
-    @Override
-    protected Bitmap doInBackground(String... strings) {
-        Bitmap bitmap = null;
-        bitmap = base64ToBitmap(strings[0]);
-        return bitmap;
-    }
-
-    private Bitmap base64ToBitmap(String base64) {
-        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        return decodedByte;
-    }
-}
-
-interface OnImageSuccess {
-    void onImageSuccess(Bitmap imageBitmap);
 }
 

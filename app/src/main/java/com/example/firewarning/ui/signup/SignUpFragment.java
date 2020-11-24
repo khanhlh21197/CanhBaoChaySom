@@ -56,7 +56,11 @@ public class SignUpFragment extends Fragment implements Result<User> {
             Log.d("email", Objects.requireNonNull(viewModel.email.getValue()));
             Log.d("email", Objects.requireNonNull(viewModel.password.getValue()));
         });
-        mBinding.linkLogin.setOnClickListener(v -> goToLogIn());
+        mBinding.linkLogin.setOnClickListener(v -> {
+            ReplaceFragment.replaceFragment(getActivity(),
+                    LoginFragment.newInstance("",
+                            ""), true);
+        });
         return mBinding.getRoot();
     }
 
@@ -71,7 +75,7 @@ public class SignUpFragment extends Fragment implements Result<User> {
                             FirebaseUser user = mAuth.getCurrentUser();
                         } else {
                             Log.d("createAccount", "failure", task.getException());
-                            Toast.makeText(getContext(), "Authentication failed.",
+                            Toast.makeText(getContext(), "Lỗi, vui lòng thử lại",
                                     Toast.LENGTH_SHORT).show();
                         }
                     });

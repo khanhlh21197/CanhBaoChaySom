@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     Toolbar toolbar;
+    TextView toolBarTitle;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -42,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         toolbar = findViewById(R.id.toolBar);
+        toolBarTitle = toolbar.findViewById(R.id.toolBarTitle);
+        toolBarTitle.setText(getResources().getString(R.string.app_name));
         setSupportActionBar(toolbar);
     }
 

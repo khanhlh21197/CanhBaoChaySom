@@ -105,25 +105,6 @@ public class TempMonitoringService extends LifecycleService implements Serializa
             idDevice = Objects.requireNonNull(intent.getExtras()).getString("idDevice");
             Log.v("TempMonitoringService", "onStartCommand");
             startTimer();
-//            MainViewModel viewModel = new MainViewModel();
-//            if (!CommonActivity.isNullOrEmpty(idDevice)) {
-//                viewModel.getAllDevices().observe(Objects.requireNonNull(this), dataSnapshot -> {
-//                    getData(dataSnapshot, devices -> {
-//                        if (devices != null) {
-//                            for (int i = 0; i < devices.size(); i++) {
-//                                Device device = devices.get(i);
-//                                if (idDevice.contains(device.getId())) {
-//                                    if (CommonActivity.isNullOrEmpty(device.getNO()) || CommonActivity.isNullOrEmpty(device.getNG()))
-//                                        return;
-//                                    if (Double.parseDouble(device.getNO()) > Double.parseDouble(device.getNG())) {
-//                                        createNotification(device, i);
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    });
-//                });
-//            }
             observeDevice(idDevice);
         }
         return START_STICKY;
@@ -314,33 +295,6 @@ public class TempMonitoringService extends LifecycleService implements Serializa
                 }
             }
         }
-//        if (devices != null) {
-//            for (Device device : devices) {
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                    if (idDevice.contains(device.getId())) {
-//                        int index = devices.indexOf(device);
-//                        deviceRef.child(String.valueOf(index))
-//                                .addValueEventListener(new ValueEventListener() {
-//                                    @Override
-//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                        Device device1 = dataSnapshot.getValue(Device.class);
-//                                        if (device1 == null) return;
-//                                        if (CommonActivity.isNullOrEmpty(device1.getNO()) || CommonActivity.isNullOrEmpty(device1.getNG()))
-//                                            return;
-//                                        if (Double.parseDouble(device1.getNO()) > Double.parseDouble(device1.getNG())) {
-//                                            createNotification(device1, index);
-//                                        }
-//                                    }
-//
-//                                    @Override
-//                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                    }
-//                                });
-//                    }
-//                }
-//            }
-//        }
     }
 
     private Observable<Device> followChild(int index) {

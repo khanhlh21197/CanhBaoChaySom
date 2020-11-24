@@ -107,7 +107,14 @@ public class DetailDeviceViewModel extends ViewModel {
 
     io.reactivex.Observable<String> setPicture(int indexOfDevice, String ng) {
         return Observable.create(emitter -> {
-            deviceRef.child(String.valueOf(indexOfDevice)).child("picture").setValue(ng)
+            deviceRef.child(String.valueOf(indexOfDevice)).child("bitmapImage").setValue(ng)
+                    .addOnSuccessListener(aVoid -> emitter.onNext("Success"));
+        });
+    }
+
+    io.reactivex.Observable<String> setDes(int indexOfDevice, String ng) {
+        return Observable.create(emitter -> {
+            deviceRef.child(String.valueOf(indexOfDevice)).child("des").setValue(ng)
                     .addOnSuccessListener(aVoid -> emitter.onNext("Success"));
         });
     }

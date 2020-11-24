@@ -130,6 +130,7 @@ public class MainFragment extends Fragment implements BaseBindingAdapter.OnItemC
     }
 
     private void getBundleData() {
+        idDevice = "";
         Bundle bundle = getArguments();
         if (!CommonActivity.isNullOrEmpty(bundle)) {
             if (CommonActivity.isNullOrEmpty(idDevice)) {
@@ -151,9 +152,9 @@ public class MainFragment extends Fragment implements BaseBindingAdapter.OnItemC
                 ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(MainViewModel.class);
         mainFragmentBinding.setLifecycleOwner(this);
         mainFragmentBinding.listDevice.setAdapter(adapter);
-        int mNoOfColumns = Utility.calculateNoOfColumns(Objects.requireNonNull(getContext()), 180);
+        int mNoOfColumns = Utility.calculateNoOfColumns(Objects.requireNonNull(getContext()), 130);
         mainFragmentBinding.listDevice
-                .setLayoutManager(new GridLayoutManager(getActivity(), mNoOfColumns));
+                .setLayoutManager(new GridLayoutManager(getActivity(), 3));
 
         mainFragmentBinding.listDevice.addItemDecoration(new ItemDecorationAlbumColumns(
                 getResources().getDimensionPixelSize(R.dimen.photos_list_spacing),
@@ -415,6 +416,15 @@ public class MainFragment extends Fragment implements BaseBindingAdapter.OnItemC
         @SuppressLint("InflateParams") View alertLayout = inflater.inflate(R.layout.dialog_edit_device_name, null);
         final EditText edtDeviceName = alertLayout.findViewById(R.id.edtDeviceName);
         final TextView txtWarning = alertLayout.findViewById(R.id.txtWarning);
+        final TextView txtDeleteDevice = alertLayout.findViewById(R.id.txtDeleteDevice);
+
+        txtDeleteDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteDevice(device);
+            }
+        });
+
         if (!CommonActivity.isNullOrEmpty(device.getName())) {
             edtDeviceName.setText(device.getName());
         } else {

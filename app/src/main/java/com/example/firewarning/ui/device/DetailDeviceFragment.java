@@ -16,8 +16,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +29,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,12 +44,15 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.firewarning.LoadImageAsync;
+import com.example.firewarning.OnImageSuccess;
 import com.example.firewarning.R;
 import com.example.firewarning.common.CommonActivity;
 import com.example.firewarning.dao.AppDatabase;
 import com.example.firewarning.databinding.DetailDeviceFragmentBinding;
 import com.example.firewarning.serializer.ObjectSerializer;
 import com.example.firewarning.ui.device.model.Device;
+import com.example.firewarning.ui.gallery.Image;
 import com.example.firewarning.warning.WarningService;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -65,7 +69,9 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -103,6 +109,13 @@ public class DetailDeviceFragment extends Fragment
     LinearLayoutManager linearLayoutManager;
     private Dialog progressDialog;
     private boolean update;
+    private ImageView dialogImageView;
+    private Bitmap pickedImage;
+//    private OnImageSuccess onImageSuccess;
+//
+//    public void setOnImageSuccess(OnImageSuccess onImageSuccess) {
+//        this.onImageSuccess = onImageSuccess;
+//    }
 
     public static DetailDeviceFragment newInstance(Device device,
                                                    String idDevice) {
@@ -208,13 +221,15 @@ public class DetailDeviceFragment extends Fragment
     }
 
     private void editImage() {
-        if (!CommonActivity.isNullOrEmpty(device.getPicture())) {
-            byte[] decodedString = Base64.decode(device.getPicture(), Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            mBinding.imageView.setVisibility(View.VISIBLE);
-            mBinding.lnPickImage.setVisibility(View.GONE);
-            mBinding.tvChoose.setVisibility(View.VISIBLE);
-            mBinding.imageView.setImageBitmap(decodedByte);
+        if (device.getBitmapImage() != null && !device.getBitmapImage().equals("")) {
+            LoadImageAsync loadImageAsync = new LoadImageAsync();
+            loadImageAsync.execute(device.getBitmapImage());
+            loadImageAsync.setOnImageSuccess(imageBitmap -> {
+                mBinding.imageView.setVisibility(View.VISIBLE);
+                mBinding.lnPickImage.setVisibility(View.GONE);
+                mBinding.tvChoose.setVisibility(View.VISIBLE);
+                mBinding.imageView.setImageBitmap(imageBitmap);
+            });
         } else {
             mBinding.tvChoose.setVisibility(View.GONE);
             mBinding.imageView.setVisibility(View.GONE);
@@ -471,13 +486,43 @@ public class DetailDeviceFragment extends Fragment
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void displayAlertDialog() {
         LayoutInflater inflater = getLayoutInflater();
-        @SuppressLint("InflateParams") View alertLayout = inflater.inflate(R.layout.dialog_edit_device_name, null);
+        @SuppressLint("InflateParams") View alertLayout = inflater.inflate(R.layout.dialog_edit_device, null);
         final EditText edtDeviceName = alertLayout.findViewById(R.id.edtDeviceName);
         final TextView txtWarning = alertLayout.findViewById(R.id.txtWarning);
+        final EditText edtDes = alertLayout.findViewById(R.id.edtDes);
+        dialogImageView = alertLayout.findViewById(R.id.imageView);
+
+//        OnImageSuccess onImageSuccess = new OnImageSuccess() {
+//            @Override
+//            public void onImageSuccess(Bitmap bitmap) {
+//                dialogImageView.setImageBitmap(bitmap);
+//            }
+//        };
+
+        LoadImageAsync loadImageAsync = new LoadImageAsync();
+        loadImageAsync.execute(device.getBitmapImage());
+        loadImageAsync.setOnImageSuccess(new OnImageSuccess() {
+            @Override
+            public void onImageSuccess(Bitmap imageBitmap) {
+                dialogImageView.setImageBitmap(imageBitmap);
+            }
+        });
+
+        dialogImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectImage(getActivity());
+            }
+        });
+
         if (!CommonActivity.isNullOrEmpty(device.getName())) {
             edtDeviceName.setText(device.getName());
         } else {
             edtDeviceName.setText(device.getId());
+        }
+
+        if (!CommonActivity.isNullOrEmpty(device.getDes())) {
+            edtDes.setText(device.getDes());
         }
 
         AlertDialog.Builder alert = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
@@ -489,7 +534,10 @@ public class DetailDeviceFragment extends Fragment
         alert.setPositiveButton("Đồng ý", (dialog, which) -> {
             if (!CommonActivity.isNullOrEmpty(edtDeviceName.getText().toString())) {
                 device.setName(edtDeviceName.getText().toString());
+                device.setDes(edtDes.getText().toString());
+
                 viewModel.setName(device.getIndex(), device.getName());
+                viewModel.setDes(device.getIndex(), device.getDes()).subscribe();
                 txtWarning.setVisibility(View.GONE);
             } else {
                 txtWarning.setVisibility(View.VISIBLE);
@@ -739,6 +787,42 @@ public class DetailDeviceFragment extends Fragment
         }
     }
 
+    private void saveImage(Bitmap finalBitmap) {
+        if (getActivity().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            Log.v("saveImage", "Permission is granted");
+            //File write logic here
+            String root = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "fire_warning_images";
+            File myDir = new File(root);
+            if (!myDir.exists()) {
+                myDir.mkdirs();
+            }
+            String fname = device.getId() + ".png";
+            File file = new File(myDir, fname);
+            if (file.exists()) {
+                file.delete();
+            } else {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+                finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                out.flush();
+                out.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
@@ -752,14 +836,19 @@ public class DetailDeviceFragment extends Fragment
                             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                             selectedImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                             byte[] byteArray = byteArrayOutputStream.toByteArray();
+
                             double kb = byteArray.length / 1024;
                             if (kb > 1000) {
                                 Toast.makeText(getActivity(), "Kích thước ảnh quá lớn, vui lòng chọn lại", Toast.LENGTH_SHORT).show();
                             } else {
+                                AppDatabase.getDatabase(getActivity()).imageDAO().insertImage(new Image(device.getId(), byteArray));
+                                pickedImage = selectedImage;
                                 mBinding.imageView.setImageBitmap(selectedImage);
+//                                dialogImageView.setImageBitmap(selectedImage);
+//                                setOnImageSuccess(selectedImage);
                                 Toast.makeText(getActivity(), "Kích thước ảnh: " + byteArray.length / 1024, Toast.LENGTH_SHORT).show();
-                                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                                viewModel.setPicture(device.getIndex(), encoded).subscribe();
+//                                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+//                                viewModel.setPicture(device.getIndex(), encoded).subscribe();
                             }
                         } catch (RuntimeException e) {
                             Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -781,10 +870,14 @@ public class DetailDeviceFragment extends Fragment
                             if (kb > 1000) {
                                 Toast.makeText(getActivity(), "Kích thước ảnh quá lớn, vui lòng chọn lại", Toast.LENGTH_SHORT).show();
                             } else {
+                                AppDatabase.getDatabase(getActivity()).imageDAO().insertImage(new Image(device.getId(), byteArray));
+                                pickedImage = selectedImage;
                                 mBinding.imageView.setImageBitmap(selectedImage);
+//                                dialogImageView.setImageBitmap(selectedImage);
+//                                setOnImageSuccess(selectedImage);
                                 Toast.makeText(getActivity(), "Kích thước ảnh: " + byteArray.length / 1024, Toast.LENGTH_SHORT).show();
-                                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                                viewModel.setPicture(device.getIndex(), encoded).subscribe();
+//                                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+//                                viewModel.setPicture(device.getIndex(), encoded).subscribe();
                             }
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
@@ -798,7 +891,38 @@ public class DetailDeviceFragment extends Fragment
                         startActivityForResult(takePicture, 0);
                     }
                     break;
+                case 123:
+                    String root = Environment.getExternalStorageDirectory().toString();
+                    File myDir = new File("fire_warning_images");
+                    if (!myDir.exists()) {
+                        myDir.mkdirs();
+                    }
+                    String fname = device.getId() + ".png";
+                    File file = new File(myDir, fname);
+                    if (file.exists()) {
+                        file.delete();
+                    } else {
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    try {
+                        FileOutputStream out = new FileOutputStream(file);
+                        pickedImage.compress(Bitmap.CompressFormat.PNG, 100, out);
+                        out.flush();
+                        out.close();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
             }
         }
     }
 }
+
+//interface OnImageSuccess{
+//    void onImageSuccess(Bitmap bitmap);
+//}

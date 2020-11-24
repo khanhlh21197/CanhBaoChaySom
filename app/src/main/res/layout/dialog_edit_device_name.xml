@@ -37,6 +37,18 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/txtDeleteDevice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:gravity="center"
+        android:text="Xóa thiết bị"
+        android:textAllCaps="true"
+        android:textColor="@color/red"
+        android:textSize="@dimen/_14ssp"
+        android:textStyle="bold" />
+
+    <TextView
         android:id="@+id/txtWarning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

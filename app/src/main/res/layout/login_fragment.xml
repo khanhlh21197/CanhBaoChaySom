@@ -13,6 +13,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:isScrollContainer="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,7 +25,7 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/_200sdp"
 
-                android:src="@drawable/ic_flame"
+                android:src="@drawable/ic_flame_warning"
                 android:textAlignment="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -84,6 +85,17 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 app:layout_constraintTop_toBottomOf="@id/password">
 
+                <TextView
+                    android:id="@+id/signUp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/_32sdp"
+                    android:text="@string/create_account"
+                    android:textColor="@color/red"
+                    android:textSize="@dimen/_14ssp" />
+
                 <ProgressBar
                     android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
@@ -109,21 +121,22 @@
                 android:layout_marginStart="@dimen/_32sdp"
                 android:layout_marginTop="@dimen/_16sdp"
                 android:layout_marginEnd="@dimen/_32sdp"
-                android:background="@drawable/btn_onpress_background_gradient_blue"
+                android:background="@drawable/btn_onpress_background_gradient_red"
                 android:text="@string/login"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_18ssp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/rlSaveUser" />
 
             <TextView
-                android:id="@+id/signUp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/create_account"
                 android:textSize="@dimen/_16ssp"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btnLogin" />

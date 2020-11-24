@@ -116,6 +116,12 @@ public class LoginFragment extends Fragment {
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        idDevice = "";
+    }
+
     @SuppressLint("CheckResult")
     private void unit() {
         loginViewModel = ViewModelProviders.of((FragmentActivity) mActivity).get(LoginViewModel.class);
