@@ -58,7 +58,7 @@ public class LoginFragment extends Fragment {
     private LoginViewModel loginViewModel;
     private Activity mActivity;
     private LoginFragmentBinding binding;
-    private String idDevice = "";
+    //    private String idDevice = "";
     private SharedPreferences sharedPreferences;
     public static final String MyPREFERENCES = "MyPrefs";
     private FirebaseAuth mAuth;
@@ -119,7 +119,6 @@ public class LoginFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        idDevice = "";
     }
 
     @SuppressLint("CheckResult")
@@ -157,7 +156,7 @@ public class LoginFragment extends Fragment {
                                 loginViewModel.setUserID(user.getUid());
                                 Log.d("isLoginSuccess", user.getUid());
                                 this.user = user;
-                                idDevice = user.getIdDevice();
+                                loginViewModel.idDevice.setValue(user.getIdDevice());
                                 onLoginSuccess(inputUser);
                                 break;
                             }
@@ -252,7 +251,7 @@ public class LoginFragment extends Fragment {
                             loginViewModel.setUserID(user.getUid());
                             Log.d("isLoginSuccess", user.getUid());
                             this.user = user;
-                            idDevice = user.getIdDevice();
+                            loginViewModel.idDevice.setValue(user.getIdDevice());
                             success.set(true);
                         }
                     }
@@ -292,7 +291,7 @@ public class LoginFragment extends Fragment {
             editor.apply();
         }
         ReplaceFragment.replaceFragment(mActivity,
-                MainFragment.newInstance(idDevice),
+                MainFragment.newInstance(loginViewModel.idDevice.getValue()),
                 true);
     }
 
@@ -318,15 +317,10 @@ public class LoginFragment extends Fragment {
                 -> Toast.makeText(mActivity, "Cancel clicked", Toast.LENGTH_SHORT).show());
 
         alert.setPositiveButton("Đồng ý", (dialog, which) -> {
-            idDevice += txtInputDevice.getText().toString() + ",";
-            loginViewModel.updateDevice(idDevice, new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    ReplaceFragment.replaceFragment(mActivity,
-                            MainFragment.newInstance(idDevice),
-                            true);
-                }
-            });
+            loginViewModel.idDevice.setValue(loginViewModel.idDevice.getValue() + txtInputDevice.getText().toString() + ",");
+            loginViewModel.updateDevice(loginViewModel.idDevice.getValue(), task -> ReplaceFragment.replaceFragment(mActivity,
+                    MainFragment.newInstance(loginViewModel.idDevice.getValue()),
+                    true));
         });
         AlertDialog dialog = alert.create();
         dialog.show();

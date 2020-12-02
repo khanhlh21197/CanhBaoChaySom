@@ -75,9 +75,8 @@ public class Device implements Serializable {
     @PropertyName("time")
     @ColumnInfo(name = "time")
     private String time;
-    @PropertyName("bitmapImage")
-    @Expose
-    private String bitmapImage;
+
+    private byte[] bitmapImage;
 
     @PropertyName("des")
     @Expose
@@ -142,11 +141,11 @@ public class Device implements Serializable {
         this.position = position;
     }
 
-    public String getBitmapImage() {
+    public byte[] getBitmapImage() {
         return bitmapImage;
     }
 
-    public void setBitmapImage(String bitmapImage) {
+    public void setBitmapImage(byte[] bitmapImage) {
         this.bitmapImage = bitmapImage;
     }
 

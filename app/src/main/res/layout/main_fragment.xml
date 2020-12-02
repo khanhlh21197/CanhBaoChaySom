@@ -53,43 +53,17 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/listDevice"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginTop="@dimen/_16sdp"
                     android:layout_marginEnd="2dp"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:layout_constraintBottom_toTopOf="@id/lnObserver"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/label"
                     tools:itemCount="3"
                     tools:listitem="@layout/item_device" />
-
-                <LinearLayout
-                    android:id="@+id/lnObserver"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_8sdp"
-                    android:layout_marginBottom="@dimen/_8sdp"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
-
-                    <Switch
-                        android:id="@+id/switchObserve"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/tvObserve"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/turn_on_monitoring"
-                        android:textSize="@dimen/_14ssp" />
-
-
-                </LinearLayout>
 
                 <ProgressBar
                     android:id="@+id/turningSwitch"
@@ -99,13 +73,41 @@
                     android:layout_marginBottom="16dp"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/lnObserver"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/lnObserver" />
+                    app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/lnObserver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_8sdp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <CheckBox
+                android:id="@+id/switchObserve"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/red"
+                tools:targetApi="lollipop" />
+
+            <TextView
+                android:id="@+id/tvObserve"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/turn_on_monitoring"
+                android:textColor="@color/red"
+                android:textSize="@dimen/_14ssp" />
+
+
+        </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

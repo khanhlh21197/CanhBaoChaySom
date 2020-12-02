@@ -87,7 +87,7 @@ public class TempMonitoringService extends LifecycleService implements Serializa
             startMyOwnForeground();
         else
             startForeground(1, new Notification());
-    }
+        }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override

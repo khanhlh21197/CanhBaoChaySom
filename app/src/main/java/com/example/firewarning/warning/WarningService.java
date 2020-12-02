@@ -38,6 +38,8 @@ public class WarningService extends Service implements MediaPlayer.OnCompletionL
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        boolean status = intent.getBooleanExtra("status", false);
+        System.out.println("WarningService.onStartCommand: " + status);
         isRunning.setValue(true);
         if (!mediaPlayer.isPlaying()) {
             mediaPlayer.start();

@@ -117,6 +117,7 @@ public class BaseBindingAdapter<T> extends RecyclerView.Adapter<BaseBindingAdapt
                             try {
                                 Bitmap bitmap = BitmapFactory.decodeByteArray(image.getImage(), 0, image.getImage().length);
                                 imgView.setImageBitmap(bitmap);
+                                device.setBitmapImage(image.getImage());
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

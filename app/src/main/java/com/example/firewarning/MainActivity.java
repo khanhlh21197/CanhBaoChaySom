@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance().signOut();
                 ReplaceFragment.replaceFragment(this, LoginFragment.newInstance(null, null), true);
                 break;
+            case R.id.changePassword:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -5,9 +5,11 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 import com.example.firewarning.ui.device.model.Device;
 import com.example.firewarning.ui.gallery.Image;
+import com.example.firewarning.utils.Converters;
 
 @Database(entities = {Device.class, Image.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {

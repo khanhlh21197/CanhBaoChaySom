@@ -19,7 +19,7 @@
         android:padding="4dp"
         tools:ignore="UnusedAttribute">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/llDeviceName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,15 +30,16 @@
 
             <TextView
                 android:id="@+id/txtDeviceName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="9"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
                 android:text="@{item_device.toString()}"
                 android:textSize="@dimen/_10ssp"
                 android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/imgEdit"
+                app:layout_constraintStart_toStartOf="parent"
                 tools:text="Tên thiết bị" />
 
             <ImageView
@@ -46,10 +47,13 @@
                 android:layout_width="@dimen/_18sdp"
                 android:layout_height="@dimen/_18sdp"
                 android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:src="@mipmap/ic_edit" />
+                android:src="@mipmap/ic_edit"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

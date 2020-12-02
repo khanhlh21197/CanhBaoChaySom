@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -18,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,8 +45,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.firewarning.LoadImageAsync;
-import com.example.firewarning.OnImageSuccess;
 import com.example.firewarning.R;
 import com.example.firewarning.common.CommonActivity;
 import com.example.firewarning.dao.AppDatabase;
@@ -53,6 +52,7 @@ import com.example.firewarning.databinding.DetailDeviceFragmentBinding;
 import com.example.firewarning.serializer.ObjectSerializer;
 import com.example.firewarning.ui.device.model.Device;
 import com.example.firewarning.ui.gallery.Image;
+import com.example.firewarning.ui.login.LoginViewModel;
 import com.example.firewarning.warning.WarningService;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -98,7 +98,6 @@ public class DetailDeviceFragment extends Fragment
     private DetailDeviceFragmentBinding mBinding;
     private DetailDeviceViewModel viewModel;
     private Device device;
-    private String idDevice = "";
     private boolean flashingText = false;
     private HistoryAdapter historyAdapter;
     private int highTemp = 0;
@@ -111,11 +110,9 @@ public class DetailDeviceFragment extends Fragment
     private boolean update;
     private ImageView dialogImageView;
     private Bitmap pickedImage;
-//    private OnImageSuccess onImageSuccess;
-//
-//    public void setOnImageSuccess(OnImageSuccess onImageSuccess) {
-//        this.onImageSuccess = onImageSuccess;
-//    }
+    private boolean dialogVisible = false;
+    private AlertDialog dialog;
+    private LoginViewModel loginViewModel;
 
     public static DetailDeviceFragment newInstance(Device device,
                                                    String idDevice) {
@@ -220,18 +217,15 @@ public class DetailDeviceFragment extends Fragment
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void editImage() {
-        if (device.getBitmapImage() != null && !device.getBitmapImage().equals("")) {
-            LoadImageAsync loadImageAsync = new LoadImageAsync();
-            loadImageAsync.execute(device.getBitmapImage());
-            loadImageAsync.setOnImageSuccess(imageBitmap -> {
-                mBinding.imageView.setVisibility(View.VISIBLE);
-                mBinding.lnPickImage.setVisibility(View.GONE);
-                mBinding.tvChoose.setVisibility(View.VISIBLE);
-                mBinding.imageView.setImageBitmap(imageBitmap);
-            });
+        if (device.getBitmapImage() != null) {
+            mBinding.imageView.setVisibility(View.VISIBLE);
+            mBinding.lnPickImage.setVisibility(View.GONE);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(device.getBitmapImage(),
+                    0, device.getBitmapImage().length);
+            mBinding.imageView.setImageBitmap(bitmap);
         } else {
-            mBinding.tvChoose.setVisibility(View.GONE);
             mBinding.imageView.setVisibility(View.GONE);
             mBinding.lnPickImage.setVisibility(View.VISIBLE);
         }
@@ -254,13 +248,17 @@ public class DetailDeviceFragment extends Fragment
         Bundle bundle = getArguments();
         if (bundle != null) {
             device = (Device) bundle.getSerializable("Device");
-            idDevice = bundle.getString("idDevice");
+//            idDevice = bundle.getString("idDevice");
         }
     }
 
     @SuppressLint("CheckResult")
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void unit() {
+        loginViewModel = ViewModelProviders
+                .of(Objects.requireNonNull(getActivity()))
+                .get(LoginViewModel.class);
+
         mDb = AppDatabase.getDatabase(getContext());
         getDB();
         initSpinner();
@@ -490,29 +488,22 @@ public class DetailDeviceFragment extends Fragment
         final EditText edtDeviceName = alertLayout.findViewById(R.id.edtDeviceName);
         final TextView txtWarning = alertLayout.findViewById(R.id.txtWarning);
         final EditText edtDes = alertLayout.findViewById(R.id.edtDes);
+        final LinearLayout txtEditdevice = alertLayout.findViewById(R.id.txtDeleteDevice);
+
         dialogImageView = alertLayout.findViewById(R.id.imageView);
+        if (!CommonActivity.isNullOrEmpty(device.getBitmapImage())) {
+            dialogImageView.setImageBitmap(BitmapFactory.decodeByteArray(device.getBitmapImage(),
+                    0, device.getBitmapImage().length));
+        }
 
-//        OnImageSuccess onImageSuccess = new OnImageSuccess() {
-//            @Override
-//            public void onImageSuccess(Bitmap bitmap) {
-//                dialogImageView.setImageBitmap(bitmap);
-//            }
-//        };
-
-        LoadImageAsync loadImageAsync = new LoadImageAsync();
-        loadImageAsync.execute(device.getBitmapImage());
-        loadImageAsync.setOnImageSuccess(new OnImageSuccess() {
-            @Override
-            public void onImageSuccess(Bitmap imageBitmap) {
-                dialogImageView.setImageBitmap(imageBitmap);
-            }
+        dialogImageView.setOnClickListener(v -> {
+            dialogVisible = true;
+            selectImage(getActivity());
         });
 
-        dialogImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectImage(getActivity());
-            }
+        txtEditdevice.setOnClickListener(v -> {
+            deleteDevice();
+            //khanhlh
         });
 
         if (!CommonActivity.isNullOrEmpty(device.getName())) {
@@ -526,12 +517,12 @@ public class DetailDeviceFragment extends Fragment
         }
 
         AlertDialog.Builder alert = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
-        alert.setTitle("Đổi tên thiết bị");
+        alert.setTitle("Cài đặt thiết bị");
         alert.setView(alertLayout);
         alert.setCancelable(false);
         alert.setNegativeButton("Hủy", (dialog, which) -> Toast.makeText(getActivity(), "Hủy", Toast.LENGTH_SHORT).show());
 
-        alert.setPositiveButton("Đồng ý", (dialog, which) -> {
+        alert.setPositiveButton("Lưu", (dialog, which) -> {
             if (!CommonActivity.isNullOrEmpty(edtDeviceName.getText().toString())) {
                 device.setName(edtDeviceName.getText().toString());
                 device.setDes(edtDes.getText().toString());
@@ -542,9 +533,37 @@ public class DetailDeviceFragment extends Fragment
             } else {
                 txtWarning.setVisibility(View.VISIBLE);
             }
+
+            if (!CommonActivity.isNullOrEmpty(device.getBitmapImage())) {
+                mBinding.imageView.setVisibility(View.VISIBLE);
+                mBinding.imageView.setImageBitmap(BitmapFactory.decodeByteArray(device.getBitmapImage(),
+                        0, device.getBitmapImage().length));
+            }
         });
-        AlertDialog dialog = alert.create();
+        dialog = alert.create();
         dialog.show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void deleteDevice() {
+        Objects.requireNonNull(CommonActivity.createDialog(getActivity(),
+                "Bạn có muốn xóa thiết bị " + device.getName() + "?",
+                getString(R.string.app_name),
+                getString(R.string.delete),
+                getString(R.string.cancel),
+                v -> {
+                    if (dialog != null && dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                    loginViewModel.idDevice.setValue(
+                            Objects.requireNonNull(
+                                    loginViewModel.idDevice.getValue())
+                                    .replaceAll(device.getId(), ""));
+                    loginViewModel.updateDevice(loginViewModel.idDevice.getValue(), task -> {
+                        Objects.requireNonNull(getActivity()).onBackPressed();
+                    });
+                },
+                null)).show();
     }
 
     private void selectImage(Context context) {
@@ -553,30 +572,27 @@ public class DetailDeviceFragment extends Fragment
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Chọn ảnh");
 
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (options[which].equals("Chụp ảnh")) {
-                    if ((ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)) == PackageManager.PERMISSION_DENIED) {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 111);
-                    } else {
-                        Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(takePicture, 0);
-                    }
-                } else if (options[which].equals("Chọn từ thư viện")) {
+        builder.setItems(options, (dialog, which) -> {
+            if (options[which].equals("Chụp ảnh")) {
+                if ((ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)) == PackageManager.PERMISSION_DENIED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 111);
+                } else {
+                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(takePicture, 0);
+                }
+            } else if (options[which].equals("Chọn từ thư viện")) {
 //                    Intent intent = new Intent(getActivity(), GallerySample.class);
 //                    startActivityForResult(intent, 111);
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);
 
 //                    Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 //                    startActivityForResult(pickPhoto, 1);
 
-                } else if (options[which].equals("Hủy")) {
-                    dialog.dismiss();
-                }
+            } else if (options[which].equals("Hủy")) {
+                dialog.dismiss();
             }
         });
         builder.show();
@@ -585,7 +601,7 @@ public class DetailDeviceFragment extends Fragment
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("CheckResult")
     private void getDB() {
-        ArrayList<Device> devices = (ArrayList<Device>) mDb.deviceDAO().getAllDevice(idDevice);
+        ArrayList<Device> devices = (ArrayList<Device>) mDb.deviceDAO().getAllDevice(loginViewModel.idDevice.getValue());
         history = new ArrayList<>(devices);
         for (Device device : devices) {
             timeLabel.add(device.getTime());
@@ -633,7 +649,7 @@ public class DetailDeviceFragment extends Fragment
                         R.string.ok,
                         R.string.cancel,
                         v1 -> {
-                            AppDatabase.getDatabase(getActivity()).deviceDAO().deleteHistory(idDevice);
+                            AppDatabase.getDatabase(getActivity()).deviceDAO().deleteHistory(loginViewModel.idDevice.getValue());
                             clearChart();
                             history.clear();
                             historyAdapter.notifyDataSetChanged();
@@ -787,42 +803,7 @@ public class DetailDeviceFragment extends Fragment
         }
     }
 
-    private void saveImage(Bitmap finalBitmap) {
-        if (getActivity().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            Log.v("saveImage", "Permission is granted");
-            //File write logic here
-            String root = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "fire_warning_images";
-            File myDir = new File(root);
-            if (!myDir.exists()) {
-                myDir.mkdirs();
-            }
-            String fname = device.getId() + ".png";
-            File file = new File(myDir, fname);
-            if (file.exists()) {
-                file.delete();
-            } else {
-                try {
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                FileOutputStream out = new FileOutputStream(file);
-                finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-                out.flush();
-                out.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
-        }
-    }
-
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
@@ -841,14 +822,20 @@ public class DetailDeviceFragment extends Fragment
                             if (kb > 1000) {
                                 Toast.makeText(getActivity(), "Kích thước ảnh quá lớn, vui lòng chọn lại", Toast.LENGTH_SHORT).show();
                             } else {
-                                AppDatabase.getDatabase(getActivity()).imageDAO().insertImage(new Image(device.getId(), byteArray));
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    AppDatabase.getDatabase(getActivity()).imageDAO().insertImage(new Image(device.getId(), byteArray));
+                                }
                                 pickedImage = selectedImage;
+                                mBinding.imageView.setVisibility(View.VISIBLE);
                                 mBinding.imageView.setImageBitmap(selectedImage);
-//                                dialogImageView.setImageBitmap(selectedImage);
+                                mBinding.lnPickImage.setVisibility(View.GONE);
+                                device.setBitmapImage(byteArray);
+                                if (dialogVisible && dialogImageView != null) {
+                                    dialogVisible = false;
+                                    dialogImageView.setImageBitmap(selectedImage);
+                                }
 //                                setOnImageSuccess(selectedImage);
                                 Toast.makeText(getActivity(), "Kích thước ảnh: " + byteArray.length / 1024, Toast.LENGTH_SHORT).show();
-//                                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-//                                viewModel.setPicture(device.getIndex(), encoded).subscribe();
                             }
                         } catch (RuntimeException e) {
                             Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -870,14 +857,19 @@ public class DetailDeviceFragment extends Fragment
                             if (kb > 1000) {
                                 Toast.makeText(getActivity(), "Kích thước ảnh quá lớn, vui lòng chọn lại", Toast.LENGTH_SHORT).show();
                             } else {
-                                AppDatabase.getDatabase(getActivity()).imageDAO().insertImage(new Image(device.getId(), byteArray));
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    AppDatabase.getDatabase(getActivity()).imageDAO().insertImage(new Image(device.getId(), byteArray));
+                                }
                                 pickedImage = selectedImage;
+                                mBinding.imageView.setVisibility(View.VISIBLE);
                                 mBinding.imageView.setImageBitmap(selectedImage);
-//                                dialogImageView.setImageBitmap(selectedImage);
-//                                setOnImageSuccess(selectedImage);
+                                mBinding.lnPickImage.setVisibility(View.GONE);
+                                device.setBitmapImage(byteArray);
+                                if (dialogVisible && dialogImageView != null) {
+                                    dialogVisible = false;
+                                    dialogImageView.setImageBitmap(selectedImage);
+                                }
                                 Toast.makeText(getActivity(), "Kích thước ảnh: " + byteArray.length / 1024, Toast.LENGTH_SHORT).show();
-//                                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-//                                viewModel.setPicture(device.getIndex(), encoded).subscribe();
                             }
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
@@ -887,7 +879,7 @@ public class DetailDeviceFragment extends Fragment
                     break;
                 case 111:
                     if (resultCode == Activity.RESULT_OK) {
-                        Intent takePicture = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         startActivityForResult(takePicture, 0);
                     }
                     break;
@@ -897,7 +889,10 @@ public class DetailDeviceFragment extends Fragment
                     if (!myDir.exists()) {
                         myDir.mkdirs();
                     }
-                    String fname = device.getId() + ".png";
+                    String fname = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        fname = device.getId() + ".png";
+                    }
                     File file = new File(myDir, fname);
                     if (file.exists()) {
                         file.delete();
@@ -923,6 +918,3 @@ public class DetailDeviceFragment extends Fragment
     }
 }
 
-//interface OnImageSuccess{
-//    void onImageSuccess(Bitmap bitmap);
-//}
